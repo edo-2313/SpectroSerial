@@ -1,11 +1,9 @@
 from cx_Freeze import setup, Executable
 
 base = None
+executables = [Executable("main.py", base=base)]
 
-
-executables = [Executable("my first prog.py", base=base)]
-
-packages = ["idna"]
+packages = ["serial","openpyxl"]
 options = {
     'build_exe': {
 
@@ -15,9 +13,9 @@ options = {
 }
 
 setup(
-    name = "<any name>",
+    name = "SpectroSerial",
     options = options,
-    version = "<any number>",
-    description = '<any description>',
+    version = "0.1",
+    description = 'Spettrofotometro seriale',
     executables = executables
 )
