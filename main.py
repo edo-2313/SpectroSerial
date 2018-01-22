@@ -6,9 +6,11 @@ from openpyxl.chart import (    #moduli per creare grafici su excel
 import os
 import serial
 
-ster='Banana'
-print(ster)
-ser = serial.Serial('COM7')  # open serial port
+print('~=~=Spettrofotometro=~=~')
+print('Ricerca porta seriale...')
+for i in range(1,255):
+    try:
+        ser = serial.Serial('COM7')  # open serial port
 ser.write(bytes(ster, 'utf-8'))
 wb = Workbook()
 ws= wb.active
