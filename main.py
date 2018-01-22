@@ -17,4 +17,10 @@ ws= wb.active
 for a in range(1,10):
     for b in range(1,10):
         ws.cell(row=a, column=b, value=a+b)
-wb.save(os.environ['UserProfile']+'\\dati.xlsx')
+grafico = LineChart()
+grafico.title = "Curva assorbanza di "+name
+grafico.style = 13
+grafico.y_axis.title = 'Assorbanza'
+grafico.x_axis.title = 'Lunghezza d\'onda'
+
+wb.save(os.environ['UserProfile']+'\\Desktop\\dati.xlsx')
