@@ -1,19 +1,20 @@
 from openpyxl import Workbook   #modulo per manipolare file excel
 from openpyxl.chart import (    #moduli per creare grafici su excel
-    LineChart,
+    ScatterChart,
     Reference,
+    Series,
 )
 import os
 import serial
 import re
+import datetime
 altro='S'
-
+now=datetime.datetime.now()
 re1='(start)'	# Word 1
 re2='(\\s+)'	# White Space 1
 re3='(time)'	# Word 2
 
 end = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-stringa=[]
 print('~=~=Spettrofotometro=~=~')
 print('')
 porta = serial.Serial('COM4')     #apri porta seriale
@@ -22,36 +23,60 @@ wb.remove(wb.active)            #rimuove il foglio di default
 while altro=='S':
     nome = input('Nome del campione: ')         #inserire il nome del campione da analizzare
     ws = wb.create_sheet(nome)
-    dati = []                                   #crea l'input
+    ws.cell(row=1,column=1,value="Lunghezza")
+    ws.cell(row=1,column=2,value="Assorbanza")
     print('\nAttendo i dati...')
+    linea=[]
+    scan=False
+    riga=2
     while True:
-        dati = porta.read()                #legge 1 byte
-        if dati==bytes('\r','utf-8'):
-            stringa = ''.join(dati)             #converte la lista in stringa
+        byte = porta.read()                #legge 1 byte
+        #print(byte)
+        if byte==b"\n":
+            stringa = ''.join(linea)             #converte la lista in stringa
+            #print('rip')
+            if end.search(stringa):
+                scan=False                     #trovato la stringa con "start time..." quindi la scansione è finita
+                print('Scansione terminata!')
+                break
+            if scan==True:
+                stringa = stringa.replace(" ","")
+                a,b=stringa.split(":")
+                #print(a+'---'+b)
+                ws.cell(row=riga,column=1,value=int(a))
+                ws.cell(row=riga,column=2,value=float(b))
+                riga=riga+1
             if stringa=='WL    AU':
                 scan=True                       #la scansione è iniziata!
-                print('iniziato!')
-            elif end.search(stringa):
-                scan=False                     #trovato la stringa con "start time..." quindi la scansione è finita
-                print('finito')     
-            else:
-                a,b=stringa.split(": ")
-            print(a+'---'+b)
-            stringa=[]
-        elif dati==bytes('\n','utf-8'):
-            pass
-        else:
-            stringa.append(str(dati, 'utf-8'))
-    for a in range(1,10):
-        for b in range(1,10):
-            ws.cell(row=a, column=b, value=a+b)
-    grafico = LineChart()
+                print('Inizio scansione!')
+            linea=[]
+        elif byte!=b"\r":
+            linea.append(str(byte, 'utf-8'))
+    assorbanze=[]
+    for i in range(2,riga):
+        assorbanze.append(ws["B"+str(i)].value)
+    lunghezze=[]
+    for i in range(2,riga):
+        lunghezze.append(ws["A"+str(i)].value)
+    grafico = ScatterChart()
     grafico.title = "Curva assorbanza di "+nome
     grafico.style = 13
     grafico.y_axis.title = 'Assorbanza'
     grafico.x_axis.title = 'Lunghezza d\'onda'
+    grafico.legend=None
+    grafico.x_axis.scaling.min=min(lunghezze)
+    grafico.x_axis.scaling.max=max(lunghezze)
+    grafico.y_axis.scaling.min=min(assorbanze)
+    grafico.y_axis.scaling.max=max(assorbanze)
+    valorix=Reference(ws, min_col=1,min_row=2,max_row=riga-1)
+    valoriy=Reference(ws, min_col=2,min_row=2,max_row=riga-1)
+    serie=Series(valoriy,valorix,title_from_data=True)
+    grafico.series.append(serie)
+    ws.add_chart(grafico)    
     altro = 'C'
+    porta.flushInput()
     while altro!='S' and altro!='N':
-        altro = input('Inserire un altro campione? (S/N)')
-
-wb.save(os.environ['UserProfile']+'\\Desktop\\dati.xlsx')
+        altro = input('Scansionare un altro campione? (S/N)')
+print('SALVATAGGIO...')
+wb.save(os.environ['UserProfile']+'\\Desktop\\dati '+now.strftime('%d-%m-%Y %H-%m')+'.xlsx')
+print('SALVATO')

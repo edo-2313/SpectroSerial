@@ -3,7 +3,7 @@ from cx_Freeze import setup, Executable
 base = None
 executables = [Executable("main.py", base=base)]
 
-packages = ["serial","openpyxl"]
+packages = ["serial","openpyxl","os","re","datetime"]
 options = {
     'build_exe': {
 

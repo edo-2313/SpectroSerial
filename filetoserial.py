@@ -1,9 +1,7 @@
 import serial
 
-ser =serial.Serial('COM5')
-file=open("log.txt","r")
-for i in range(6000):
-    char=bytes(file.read(1),'ascii')
-    ser.write(char)
-    print(char)
-print('Ciaociao')
+ser =serial.Serial('COM8')
+file = open("log.txt","r")
+for i in range(5000):
+    byte=bytes(file.read(1),'utf-8')
+    ser.write(byte)
