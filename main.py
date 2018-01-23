@@ -5,32 +5,18 @@ from openpyxl.chart import (    #moduli per creare grafici su excel
 )
 import os
 import serial
-
-altro='S'
-
-
-
 import re
-
-txt='start time: 10:32:50.20'
+altro='S'
 
 re1='(start)'	# Word 1
 re2='(\\s+)'	# White Space 1
 re3='(time)'	# Word 2
 
-rg = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
-m = rg.search(txt)
-if m:
-    word1=m.group(1)
-    ws1=m.group(2)
-    word2=m.group(3)
-    print "("+word1+")"+"("+ws1+")"+"("+word2+")"+"\n"
-
-
-
+end = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
+stringa=[]
 print('~=~=Spettrofotometro=~=~')
 print('')
-porta = serial.Serial('COM7')     #apri porta seriale
+porta = serial.Serial('COM4')     #apri porta seriale
 wb = Workbook()                 #crea un file excel
 wb.remove(wb.active)            #rimuove il foglio di default
 while altro=='S':
@@ -39,12 +25,18 @@ while altro=='S':
     dati = []                                   #crea l'input
     print('\nAttendo i dati...')
     while True:
-        carattere = porta.read()                #legge 1 byte
+        dati = porta.read()                #legge 1 byte
         if dati==bytes('\r','utf-8'):
             stringa = ''.join(dati)             #converte la lista in stringa
             if stringa=='WL    AU':
                 scan=True                       #la scansione è iniziata!
-            if stringa=='start time'
+                print('iniziato!')
+            elif end.search(stringa):
+                scan=False                     #trovato la stringa con "start time..." quindi la scansione è finita
+                print('finito')     
+            else:
+                a,b=stringa.split(": ")
+            print(a+'---'+b)
             stringa=[]
         elif dati==bytes('\n','utf-8'):
             pass
