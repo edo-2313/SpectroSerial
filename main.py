@@ -77,6 +77,9 @@ while altro=='S':
     porta.flushInput()
     while altro!='S' and altro!='N':
         altro = input('Scansionare un altro campione? (S/N)')
-print('SALVATAGGIO...')
-wb.save(os.environ['UserProfile']+'\\Desktop\\dati '+now.strftime('%d-%m-%Y %H-%m')+'.xlsx')
+        altro = altro.replace("s","S")
+        altro = altro.replace("n","N")
+nomefile = input('\nNome del file: ')
+print('SALVATAGGIO... IL FILE SARÀ SALVATO SUL DESKTOP!')
+wb.save(os.environ['UserProfile']+'\\Desktop\\'+nomefile+'.xlsx')
 print('SALVATO')
