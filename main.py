@@ -17,7 +17,11 @@ re3='(time)'	# Word 2
 end = re.compile(re1+re2+re3,re.IGNORECASE|re.DOTALL)
 print('~=~=Spettrofotometro=~=~')
 print('')
-porta = serial.Serial('COM4')     #apri porta seriale
+try:
+    porta = serial.Serial('COM4')     #apri porta seriale
+except:
+    print('Spettrofotometro non trovato!')
+    time.sleep(5)
 wb = Workbook()                 #crea un file excel
 wb.remove(wb.active)            #rimuove il foglio di default
 while altro=='S':
