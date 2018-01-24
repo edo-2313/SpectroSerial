@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 
 base = None
-executables = [Executable("main.py", base=base)]
+executables = [Executable("main.py", base=base,icon="icon.ico")]
 
 packages = ["serial","openpyxl","os","re","datetime"]
 options = {
@@ -13,9 +13,9 @@ options = {
 }
 
 setup(
-    name = "SpectroSerial",
+    name = "Spettrofotometro Excel",
     options = options,
-    version = "0.1",
+    version = "1.0",
     description = 'Spettrofotometro seriale',
     executables = executables
 )
