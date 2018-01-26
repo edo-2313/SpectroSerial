@@ -63,7 +63,7 @@ while altro=='S':
         lunghezze.append(ws["A"+str(i)].value)
     grafico = ScatterChart()
     grafico.title = "Curva assorbanza di "+nome
-    grafico.style = 13
+    grafico.style = 5
     grafico.y_axis.title = 'Assorbanza'
     grafico.x_axis.title = 'Lunghezza d\'onda'
     grafico.legend=None
